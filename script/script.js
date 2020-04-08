@@ -53,11 +53,6 @@ $(document).ready(function(){
         }
     });
 
-    // $(document).on("click", ".calendarwrap .appointment" , function() {
-    //        console.log('click app');
-    //    });
-    //
-
     $(document).on("mousedown", ".calendarwrap .appointment" , function() {
          console.log('click app');
          mouseStart = mouseY;
@@ -187,6 +182,7 @@ function drawApp(appId){
 
     let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
     $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn + '</div>');
+    calcWorktime();
 
 }
 
@@ -214,15 +210,29 @@ function changeApp(appId){
         $('#app_' + appId).empty();
         $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn)
         $('#app_' + appId).css({top: top}).css({height: height});
+
+        if(tempApp.type != 'busy'){
+            $('#app_' + appId).removeClass('busy');
+        }
+        else{
+            $('#app_' + appId).addClass('busy');
+        }
     }
+    calcWorktime();
+
 }
 
 function changeAppData(appId){
     let tempApp = getApp(appId);
+    let check = '';
+    if(tempApp.type != 'deleted' || tempApp.type != 'busy'){
+        check = 'checked';
+    }
     let popup = '<div id="popup" class="popup">'
     popup += '<p>Werktijd aanpassen</p>'
-    popup += '<label>Begintijd</label></br><input min="0" max="23" id="popupStarttime" type="number" value="' + tempApp.startTime +'"></br>'
-    popup += '<label>Eindtijd</label></br><input min="0" max="23" id="popupEndtime" type="number" value="' + tempApp.endTime +'"></br>'
+    popup += '<label>Begintijd</label></br><input min="0" max="24" id="popupStarttime" type="number" value="' + tempApp.startTime +'"></br>'
+    popup += '<label>Eindtijd</label></br><input min="0" max="24" id="popupEndtime" type="number" value="' + tempApp.endTime +'"></br>'
+    popup += '<label>Beschikbaar</label></br><input type="checkbox" id="available" '+ check +'></br>'
     popup += '<button onclick="confirmAppData(' + appId + ')">Confirm</button>'
     popup += '<button onclick="closePopUp()">Close</button>'
     popup += '</div>'
@@ -252,6 +262,13 @@ function confirmAppData(appId){
     tempApp.startTime = $('#popupStarttime').val();
     tempApp.endTime = $('#popupEndtime').val();
     tempApp.totalTime = tempApp.endTime - tempApp.startTime;
+    if ($('#available').is(":checked"))
+    {
+        tempApp.type = 'looking';
+    }
+    else{
+        tempApp.type = 'busy';
+    }
     console.log(tempApp);
     changeAppObj(tempApp);
     closePopUp();
@@ -266,4 +283,15 @@ function changeAppObj(tempApp){
         }
 
     })
+}
+
+function calcWorktime(){
+    let workTime = 0;
+    $.each(appointments, function(i, v){
+        if(v.type != 'deleted' || v.type != 'busy'){
+            workTime += v.totalTime;
+        }
+    })
+
+    $('#worktime').empty().append('<label>Totale werkweek</label><h2>' +  workTime + ' uren</h2>')
 }

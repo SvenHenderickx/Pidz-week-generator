@@ -169,6 +169,25 @@
                 </div>
 
             </div>
+            <div class="sidebar">
+                <div class="info">
+                    <div class="infocontent" id="worktime">
+                        <label>
+                            Totale werkweek
+                        </label>
+
+                    </div>
+                    <div class="infocontent">
+                        <label>
+                            Alle tags
+                        </label>
+
+                    </div>
+                </div>
+                <div class="preferences">
+                    <h1>Voorkeuren</h1>
+                </div>
+            </div>
         </main>
     </body>
 </html>

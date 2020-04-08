@@ -74,6 +74,10 @@ body {
     box-sizing: border-box;
 }
 
+.busy {
+    background-color: #EB5D5D;
+}
+
 .popupcontainer {
     display: block;
     width: 100%;
@@ -98,4 +102,30 @@ body {
     border-radius: 10px;
     min-height: 200px;
     padding: 10px;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    max-width: 100%:
+    box-sizing: content-box;
+
+}
+
+.sidebar {
+    padding: 30px;
+    width: 100%;
+    box-sizing: content-box;
+}
+
+.infocontent {
+    margin-bottom: 24px;
+}
+
+.preferences {
+    box-sizing: content-box;
+    background-color: #DFDFDF;
+    padding: 15px 30px;
+    border-radius: 10px;
 }
