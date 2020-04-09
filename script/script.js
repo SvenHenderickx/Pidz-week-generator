@@ -13,6 +13,7 @@ let appointments = [];
 let dayPartheight = 35;
 var timeout;
 var highestId = 0;
+var editable = true;
 
 $(document).mousemove(function(e) {
     mouseX = e.pageX;
@@ -109,7 +110,7 @@ function moveAppointment(){
         let mouseEnd = mouseStart - mouseY;
 
         let fakeMouseEnd = Math.round(mouseEnd / dayPartheight);
-        if(checkIsApp(tempApp.day, tempApp.startTime, tempApp.endTime, tempApp.id) || true){
+        if(editable){
             // appointments[appId].startTime -= fakeMouseEnd;
             // appointments[appId].endTime -= fakeMouseEnd;
             tempApp.startTime -= fakeMouseEnd;
@@ -143,7 +144,8 @@ function createJsonApp(){
         endTime: Number(endHour),
         totalTime: Number(endHour) - Number(startHour),
         tags: '',
-        type: 'looking'
+        type: 'looking',
+        appearance: 'normal'
     };
 
     appointments.push(tempApp);
@@ -174,15 +176,28 @@ function checkIsApp(day, starttime, endtime, ownId){
 
 function drawApp(appId){
     let tempApp = getApp(appId);
-    let height = tempApp.totalTime * dayPartheight;
-    let left;
-    let top;
-    left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
-    top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
+    if(editable){
+        let height = tempApp.totalTime * dayPartheight;
+        let left;
+        let top;
+        left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
+        top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
 
-    let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
-    $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn + '</div>');
-    calcWorktime();
+        let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
+        $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn + '</div>');
+        calcWorktime();
+    }
+
+    if(tempApp.type == 'worktime'){
+        let height = tempApp.totalTime * dayPartheight;
+        let left;
+        let top;
+        left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
+        top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
+
+        let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
+        $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment answer"><p> ' + tempApp.startTime + ':00  blabla- ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn + '</div>');
+    }
 
 }
 
@@ -207,16 +222,44 @@ function changeApp(appId){
         top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
         let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
 
-        $('#app_' + appId).empty();
-        $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn)
-        $('#app_' + appId).css({top: top}).css({height: height});
 
-        if(tempApp.type != 'busy'){
-            $('#app_' + appId).removeClass('busy');
+        $('#app_' + appId).empty();
+
+        if(tempApp.appearance == 'locked'){
+            console.log('in locked')
+            $('#app_' + appId).css({top: top}).css({height: height});
+            if(tempApp.type != 'busy'){
+                $('#app_' + appId).removeClass('busy');
+            }
+            else{
+                $('#app_' + appId).addClass('busy');
+            }
+
+            if(tempApp.type == 'looking'){
+                $('#app_' + appId).addClass('locked');
+            }
         }
-        else{
-            $('#app_' + appId).addClass('busy');
+        else if(tempApp.type != 'deleted'){
+            $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn)
+            $('#app_' + appId).css({top: top}).css({height: height});
+            $('#app_' + appId).removeClass('locked');
+
+
+            if(tempApp.type != 'busy'){
+                $('#app_' + appId).removeClass('busy');
+            }
+            else{
+                $('#app_' + appId).addClass('busy');
+            }
+
+            if(tempApp.type == 'worktime'){
+
+            }
         }
+        else {
+
+        }
+
     }
     calcWorktime();
 
@@ -295,3 +338,83 @@ function calcWorktime(){
 
     $('#worktime').empty().append('<label>Totale werkweek</label><h2>' +  workTime + ' uren</h2>')
 }
+
+function generateWorkweek(){
+    if(editable){
+        $.each(appointments, function(i, v){
+            if(v.type != 'busy' || v.type != 'deleted'){
+                v.appearance = 'locked';
+                changeApp(v.id);
+            }
+        })
+
+        $.each(appointments, function(i, v){
+            if(v.type != 'busy' || v.type != 'deleted'){
+
+                var rnd = Math.random();
+                var newstart = v.startTime;
+                var newend = v.endTime;
+
+                if(rnd < .5){
+                    var extra =  Math.floor((Math.random() * 2) + 1);
+                    rnd = Math.random();
+                    if(rnd < .5){
+                        newstart += extra;
+                    }
+                    else{
+                        newstart -= extra;
+                    }
+
+                    extra =  Math.floor((Math.random() * 2) + 1);
+                    rnd = Math.random();
+
+                    if(rnd < .5){
+                        newend += extra;
+                    }
+                    else{
+                        newend -= extra;
+                    }
+
+                }
+
+
+                let tempApp = {
+                    id: highestId,
+                    day: v.day,
+                    startTime: newstart,
+                    endTime: newend,
+                    totalTime: newend - newstart,
+                    tags: '',
+                    type: 'worktime',
+                    appearance: 'normal',
+                    answerid: v.id
+                };
+
+                appointments.push(tempApp);
+                highestId++;
+
+                drawApp(tempApp.id);
+            }
+        })
+    }
+
+
+    editable = false;
+
+}
+
+$(document).on('input', '.slider', function() {
+    var name = $(this).attr('id');
+    var shortname = name.substring(6);
+    var sliderval = $(this).val();
+
+    $('#number' + shortname).val(sliderval);
+})
+
+$(document).on('input', '.numberslider', function() {
+    var name = $(this).attr('id');
+    var shortname = name.substring(6);
+    var numberval = $(this).val();
+
+    $('#slider' + shortname).val(numberval);
+})

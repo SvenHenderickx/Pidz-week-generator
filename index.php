@@ -186,6 +186,15 @@
                 </div>
                 <div class="preferences">
                     <h1>Voorkeuren</h1>
+                    <div class="row">
+                        <label>Afstand tot aan dienst (km)</label></br>
+                        <input class="slider" id="slider_distance" name="beardlength" type="range" min="0" max="200" value="50"><input id="number_distance" class="numberslider" type="number" min="0" max="200" value="50"/>
+                    </div>
+                    <div class="row">
+                        <label>Tarief (minimaal)</label></br>
+                        <input class="slider" id="slider_price" name="beardlength" type="range" min="10" max="200" value="35"><input id="number_price" class="numberslider" type="number" min="10" max="200" value="35"/>
+                    </div>
+                    <button onclick="generateWorkweek()" class="btngenerate"> Genereer werkweek</button>
                 </div>
             </div>
         </main>
