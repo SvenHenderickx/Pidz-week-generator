@@ -201,3 +201,32 @@ main {
 .locked {
     background: #C8C8C8;
 }
+
+.worktimeanswer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.worktimeanswer button {
+    border: none;
+    margin: 10px;
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 30px;
+}
+
+.worktimeanswer .accept {
+    border: #00BC4B solid 3px;
+    background-color: #68FF77;
+    color: #00BC4B;
+}
+
+.worktimeanswer .decline {
+    border: #E70000 solid 3px;
+    background-color: #FF6868;
+    color: #E70000;
+}

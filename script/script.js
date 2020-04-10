@@ -242,9 +242,10 @@ function drawApp(appId){
         let top;
         left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
         top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
+        let btns = '<div class="worktimeanswer"><button class="accept" onclick="worktimeAnswer(0, ' + appId + ')">+</button>';
+        btns += '<button class="decline" onclick="worktimeAnswer(1, ' + appId + ')">-</button></div>';
 
-        let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
-        $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment answer"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn + '</div>');
+        $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment answer"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btns + ' </div>');
     }
 
 }
