@@ -243,6 +243,7 @@ function drawApp(appId){
         left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
         top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
         let btns = '<div class="worktimeanswer"><button class="accept" onclick="worktimeAnswer(0, ' + appId + ')">+</button>';
+        btns += '<button class="info" onclick="worktimeinfo(' + appId + ')">?</button>';
         btns += '<button class="decline" onclick="worktimeAnswer(1, ' + appId + ')">-</button></div>';
 
         $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment answer"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btns + ' </div>');
@@ -588,3 +589,27 @@ $(document).on('input', '.numberslider', function() {
 
     $('#slider' + shortname).val(numberval);
 })
+
+
+function worktimeinfo(appId){
+    let tempApp = getApp(appId);
+
+    if(tempApp.type == 'worktime'){
+        let popup = '<div id="popup" class="popup">'
+        popup += '<h2>Werk informatie</h2>'
+        popup += '<label>Werktijden</label>'
+        popup += '<h3>' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </h3>'
+        popup += '<label>Totale tijd</label>'
+        popup += '<h3>' + tempApp.totalTime + ':00</h3>'
+        popup += '<label>Locatie</label>'
+        popup += '<h3>Eindhoven </h3>'
+        popup += '<label>Type werk</label>'
+        popup += '<h3>Ouderenzorg </h3>'
+        popup += '<label>Tarief</label>'
+        popup += '<h3>€' + $('#number_price').val() + ',-</h3>'
+        popup += '<button onclick="closePopUp()">Close</button>'
+        popup += '</div>'
+        $('.popupcontainer').css({display: 'flex'}).append(popup);
+    }
+
+}

@@ -211,9 +211,9 @@ main {
 
 .worktimeanswer button {
     border: none;
-    margin: 10px;
+    margin: 5px;
     width: 60px;
-    height: 60px;
+    height: 50px;
     border-radius: 10px;
     font-weight: 800;
     font-size: 30px;
@@ -225,8 +225,18 @@ main {
     color: #00BC4B;
 }
 
+.worktimeanswer .info {
+    border: #f77700 solid 3px;
+    background-color: #f4a359;
+    color: #f77700;
+}
+
 .worktimeanswer .decline {
     border: #E70000 solid 3px;
     background-color: #FF6868;
     color: #E70000;
+}
+
+h3 {
+    margin: 3px 0;
 }
