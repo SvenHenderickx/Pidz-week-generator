@@ -78,6 +78,10 @@ body {
     background-color: rgba(79, 224, 85, .5) !important;
 }
 
+.answer .accepeted {
+    background-color: rgba(79, 224, 85, 1) !important;
+}
+
 .busy {
     background-color: #EB5D5D;
 }
@@ -201,6 +205,14 @@ main {
 .locked {
     background: #C8C8C8;
 }
+
+.worktimeanswer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 
 .worktimeanswer {
     display: flex;

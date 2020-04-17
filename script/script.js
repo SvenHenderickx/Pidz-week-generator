@@ -104,29 +104,37 @@ function clearPointsMove(){
 }
 
 function moveAppointment(){
-    if(mouseStart != null && appointmentEl != null){
-        let appId = ($(appointmentEl).attr('id')).substring(4);
-        let tempApp = getApp(appId);
-        let mouseEnd = mouseStart - mouseY;
+    if(editable){
+        if(mouseStart != null && appointmentEl != null){
+            let appId = ($(appointmentEl).attr('id')).substring(4);
+            let tempApp = getApp(appId);
+            let mouseEnd = mouseStart - mouseY;
 
-        let fakeMouseEnd = Math.round(mouseEnd / dayPartheight);
-        if(editable){
-            // appointments[appId].startTime -= fakeMouseEnd;
-            // appointments[appId].endTime -= fakeMouseEnd;
-            tempApp.startTime -= fakeMouseEnd;
-            tempApp.endTime -= fakeMouseEnd;
-            if(!checkIsApp(tempApp.day, tempApp.startTime, tempApp.endTime, tempApp.id)){
-                changeAppObj(tempApp);
-                changeApp(appId);
+            let fakeMouseEnd = Math.round(mouseEnd / dayPartheight);
+            if(editable){
+                // appointments[appId].startTime -= fakeMouseEnd;
+                // appointments[appId].endTime -= fakeMouseEnd;
+                tempApp.startTime -= fakeMouseEnd;
+                tempApp.endTime -= fakeMouseEnd;
+                if(!checkIsApp(tempApp.day, tempApp.startTime, tempApp.endTime, tempApp.id)){
+                    changeAppObj(tempApp);
+                    changeApp(appId);
+                }
+
+
             }
+            console.log(appointments[appId]);
 
-
+            // let currentTop = appointmentEl.offset().top;
+            mouseStart = mouseStart - mouseEnd;
         }
-        console.log(appointments[appId]);
-
-        // let currentTop = appointmentEl.offset().top;
-        mouseStart = mouseStart - mouseEnd;
     }
+    else {
+        console.log('move app does nothing')
+    }
+
+
+
     // clearPointsMove();
 }
 
@@ -237,6 +245,7 @@ function drawApp(appId){
         console.log('draw app normal')
     }
     else if(tempApp.type == 'worktime'){
+
         let height = tempApp.totalTime * dayPartheight;
         let left;
         let top;
@@ -247,70 +256,100 @@ function drawApp(appId){
         btns += '<button class="decline" onclick="worktimeAnswer(1, ' + appId + ')">-</button></div>';
 
         $('.calendarwrap').append('<div id="app_' + tempApp.id + '" style="top: ' + ( top + 0) + '; left: '+ left +'; height: ' + height +'px;" class="appointment answer"><p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btns + ' </div>');
+
+
     }
 
 }
 
 function changeApp(appId){
-    let tempApp = appointments[appId];
+    let tempApp = getApp(appId);
 
-    if(tempApp.startTime < 0){
-        appointments[appId].startTime = 0;
-        appointments[appId].endTime = 0 + tempApp.totalTime;
-
-    }
-    else if(tempApp.endTime > 24){
-        appointments[appId].endTime = 24;
-        appointments[appId].startTime = 24 - tempApp.totalTime;
-
+    if(tempApp.type == 'deleted'){
+        $('#app_' + appId).remove();
     }
     else{
-        let height = tempApp.totalTime * dayPartheight;
-        let left;
-        let top;
-        left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
-        top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
-        let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
 
+        if(tempApp.startTime < 0){
+            appointments[appId].startTime = 0;
+            appointments[appId].endTime = 0 + tempApp.totalTime;
 
-        $('#app_' + appId).empty();
-
-        if(tempApp.appearance == 'locked'){
-            console.log('in locked')
-            $('#app_' + appId).css({top: top}).css({height: height});
-            if(tempApp.type != 'busy'){
-                $('#app_' + appId).removeClass('busy');
-            }
-            else{
-                $('#app_' + appId).addClass('busy');
-            }
-
-            if(tempApp.type == 'looking'){
-                $('#app_' + appId).addClass('locked');
-            }
         }
-        else if(tempApp.type != 'deleted'){
-            $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn)
-            $('#app_' + appId).css({top: top}).css({height: height});
-            $('#app_' + appId).removeClass('locked');
+        else if(tempApp.endTime > 24){
+            appointments[appId].endTime = 24;
+            appointments[appId].startTime = 24 - tempApp.totalTime;
+
+        }
+
+        height = tempApp.totalTime * dayPartheight;
+            let left;
+            let top;
+            left = $('#' + tempApp.day + (tempApp.startTime).toString()).offset().left;
+            top = $('#' + tempApp.day  + (tempApp.startTime).toString()).offset().top;
+            let btn = '<button onclick="changeAppData(' + appId + ')">EDIT</button>'
 
 
-            if(tempApp.type != 'busy'){
-                $('#app_' + appId).removeClass('busy');
-            }
-            else{
-                $('#app_' + appId).addClass('busy');
-            }
+            $('#app_' + appId).empty();
 
             if(tempApp.type == 'worktime'){
+                if(tempApp.appearance == 'accepted'){
+
+                    $('#app_' + appId).addClass('accepted');
+                    let btns = '<div class="worktimeanswer"><button class="info" onclick="worktimeinfo(' + appId + ')">?</button></div>';
+
+                    $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btns)
+
+
+                }
+                else if(tempApp.appearance == 'declined'){
+
+                    $('#app_' + appId).remove();
+
+                }
+            }
+            else{
+
+                if(tempApp.appearance == 'locked'){
+                    console.log('in locked')
+                    $('#app_' + appId).css({top: top}).css({height: height});
+                    if(tempApp.type != 'busy'){
+                        $('#app_' + appId).removeClass('busy');
+                    }
+                    else{
+                        $('#app_' + appId).addClass('busy');
+                    }
+
+                    if(tempApp.type == 'looking'){
+                        $('#app_' + appId).addClass('locked');
+                    }
+                }
+                else if(tempApp.type != 'deleted'){
+                    $('#app_' + appId).append('<p> ' + tempApp.startTime + ':00 - ' + tempApp.endTime + ':00 </p><p>' +  tempApp.totalTime + ':00</p>' + btn)
+                    $('#app_' + appId).css({top: top}).css({height: height});
+                    $('#app_' + appId).removeClass('locked');
+
+
+                    if(tempApp.type != 'busy'){
+                        $('#app_' + appId).removeClass('busy');
+                    }
+                    else{
+                        $('#app_' + appId).addClass('busy');
+                    }
+
+                    if(tempApp.type == 'worktime'){
+
+                    }
+                }
+                else {
+
+                }
 
             }
-        }
-        else {
 
-        }
+
 
     }
+
     calcWorktime();
 
 }
@@ -327,6 +366,7 @@ function changeAppData(appId){
     popup += '<label>Eindtijd</label></br><input min="0" max="24" id="popupEndtime" type="number" value="' + tempApp.endTime +'"></br>'
     popup += '<label>Beschikbaar</label></br><input type="checkbox" id="available" '+ check +'></br>'
     popup += '<button onclick="confirmAppData(' + appId + ')">Confirm</button>'
+    popup += '<button onclick="deleteApp(' + appId + ')">Delete</button>'
     popup += '<button onclick="closePopUp()">Close</button>'
     popup += '</div>'
     $('.popupcontainer').css({display: 'flex'}).append(popup);
@@ -363,6 +403,15 @@ function confirmAppData(appId){
         tempApp.type = 'busy';
     }
     console.log(tempApp);
+    changeAppObj(tempApp);
+    closePopUp();
+    changeApp(appId);
+}
+
+function deleteApp(appId){
+    let tempApp = getApp(appId);
+    tempApp.type = 'deleted';
+
     changeAppObj(tempApp);
     closePopUp();
     changeApp(appId);
@@ -612,4 +661,22 @@ function worktimeinfo(appId){
         $('.popupcontainer').css({display: 'flex'}).append(popup);
     }
 
+}
+
+function worktimeAnswer(answer, appId){
+    answer = Number(answer);
+    let tempApp = getApp(appId);
+    console.log('answer = ' + answer);
+
+    if(answer == 0){
+        tempApp.appearance = 'accepted';
+    }
+    else{
+        tempApp.appearance = 'declined';
+    }
+
+    console.log(tempApp);
+
+    changeAppObj(tempApp);
+    changeApp(appId);
 }
